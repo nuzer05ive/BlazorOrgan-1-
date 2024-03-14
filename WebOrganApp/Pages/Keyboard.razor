@@ -1,0 +1,54 @@
+@page "/keyboard"
+@inject IJSRuntime JS
+
+<div tabindex="0" @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" style="outline:none;">
+    Press ASDF or JKL; to play notes.
+</div>
+
+@code {
+    private HashSet<string> activeKeys = new HashSet<string>();
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        var key = e.Code switch
+        {
+            "KeyA" => "KeyA",
+            "KeyS" => "KeyS",
+            "KeyD" => "KeyD",
+            "KeyF" => "KeyF",
+            "KeyJ" => "KeyJ",
+            "KeyK" => "KeyK",
+            "KeyL" => "KeyL",
+            "Semicolon" => "Semicolon",
+            _ => null
+        };
+
+        if (key != null && !activeKeys.Contains(key))
+        {
+            activeKeys.Add(key); // Mark the key as active
+            await JS.InvokeVoidAsync("playNoteForKey", key);
+        }
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        var key = e.Code switch
+        {
+            "KeyA" => "KeyA",
+            "KeyS" => "KeyS",
+            "KeyD" => "KeyD",
+            "KeyF" => "KeyF",
+            "KeyJ" => "KeyJ",
+            "KeyK" => "KeyK",
+            "KeyL" => "KeyL",
+            "Semicolon" => "Semicolon",
+            _ => null
+        };
+
+        if (key != null && activeKeys.Contains(key))
+        {
+            activeKeys.Remove(key); // Remove the key from active tracking
+            await JS.InvokeVoidAsync("stopNoteForKey", key); // Assumes you have this function in your JS
+        }
+    }
+}
